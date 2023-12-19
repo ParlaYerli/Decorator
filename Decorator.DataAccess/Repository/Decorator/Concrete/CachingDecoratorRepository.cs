@@ -5,11 +5,11 @@ using System.Threading.Tasks;
 
 namespace Decorator.DataAccess.Repository.Decorator.Concrete
 {
-    public class CacheDecoratorRepository : BaseRepositoryDecorator
+    public class CachingDecoratorRepository : BaseRepositoryDecorator
     {
         private const string cacheName = "products";
         private readonly IMemoryCache _memoryCache;
-        public CacheDecoratorRepository(IProductRepository productRepository, IMemoryCache memoryCache) : base(productRepository)
+        public CachingDecoratorRepository(IProductRepository productRepository, IMemoryCache memoryCache) : base(productRepository)
         {
             _memoryCache = memoryCache;
         }

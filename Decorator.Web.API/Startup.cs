@@ -38,24 +38,36 @@ namespace Decorator.Web.API
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Decorator.Web.API", Version = "v1" });
             });
-        
+
             services.AddDbContext<AppDbContext>(options =>
             {
                 options.UseInMemoryDatabase("myDatabase");
             });
+
+            services.AddScoped<IProductRepository, ProductRepository>().
+                    Decorate<IProductRepository,CachingDecoratorRepository>().
+                    Decorate<IProductRepository,LoggingDecoratorRepository>();
+
             services.AddEntityFrameworkInMemoryDatabase();
+
             services.AddScoped<IProductService, ProductService>();
-            //services.AddScoped<IProductRepository, ProductRepository>();
-            services.AddScoped<IProductRepository>(sp =>
-            {
-                var appDbContext = sp.GetRequiredService<AppDbContext>();
 
-                var productRepository = new ProductRepository(appDbContext);
+            ////services.AddScoped<IProductRepository, ProductRepository>();
+            //services.AddScoped<IProductRepository>(sp =>
+            //{
+            //    var appDbContext = sp.GetRequiredService<AppDbContext>();
 
-                var memoryCache = sp.GetRequiredService<IMemoryCache>();
+            //    var productRepository = new ProductRepository(appDbContext);
 
-                return new CacheDecoratorRepository(productRepository, memoryCache);
-            });
+            //    var memoryCache = sp.GetRequiredService<IMemoryCache>();
+            //    var logProvider = sp.GetRequiredService<ILogger<LoggingDecoratorRepository>>();
+
+            //    var cacheDecorator = new CachingDecoratorRepository(productRepository, memoryCache);
+
+            //    var logDecorator = new LoggingDecoratorRepository(cacheDecorator, logProvider);
+
+            //    return logDecorator;
+            //});
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
